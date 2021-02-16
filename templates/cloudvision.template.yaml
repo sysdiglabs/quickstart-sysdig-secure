@@ -1,5 +1,23 @@
 AWSTemplateFormatVersion: "2010-09-09"
 Description: Quickstart for Sysdig's CloudVision stack
+Metadata:
+  QuickStartDocumentation:
+    EntrypointName: "Quickstart for Sysdig's CloudVision stack"
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+      - Label:
+          default: "Sysdig Secure configuration"
+        Parameters:
+          - SecureEndpoint
+          - SecureAPIToken
+          - SecureAgentToken
+    ParameterLabels:
+      SecureEndpoint:
+        default: Sysdig Secure endpoint.
+      SecureAPIToken:
+        default: Sysdig Secure API token.
+      SecureAgentToken:
+        default: Sysdig Secure Agent token.
 
 Parameters:
   SecureAPIToken:
