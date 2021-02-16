@@ -1,0 +1,3 @@
+
+=== Quickstart for Sysdig's CloudVision stack
+include::cloudvision.template.adoc[]

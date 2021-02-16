@@ -1,0 +1,9 @@
+
+.Sysdig Secure configuration
+[width="100%",cols="16%,11%,73%",options="header",]
+|===
+|Parameter label (name) |Default value|Description|Sysdig Secure endpoint.
+(`SecureEndpoint`)|`https://secure.sysdig.com`|Enter your Sysdig Secure Endpoint|Sysdig Secure API token.
+(`SecureAPIToken`)|`**__Requires input__**`|Enter your Sysdig Secure API Token|Sysdig Secure Agent token.
+(`SecureAgentToken`)|`**__Blank string__**`|Enter your Sysdig Secure Agent Token. Only required if the Cloud Connector is going to be deployed, if not specified the Cloud Connector won't be deployed.
+|===

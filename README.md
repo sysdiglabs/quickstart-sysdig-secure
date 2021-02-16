@@ -1,1 +1,0 @@
-# quickstart-sysdig-secure
