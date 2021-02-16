@@ -19,7 +19,7 @@ jobs:
     - name: Setup python
       uses: actions/setup-python@v1
       with:
-        python-version: 3.7.7
+        python-version: ^3.8
     - name: Generate dynamic content.
       run: ./docs/boilerplate/.utils/generate_dynamic_content.sh
     - name: Run local actions
