@@ -1,0 +1,72 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: Quickstart for Sysdig's CloudVision stack
+
+Parameters:
+  SecureAPIToken:
+    Type: String
+    Description: "Enter your Sysdig Secure API Token"
+
+  SecureAgentToken:
+    Type: String
+    Description: "Enter your Sysdig Secure Agent Token. Only required if the Cloud Connector is going to be deployed, if not specified the Cloud Connector won't be deployed."
+    Default: ""
+
+  SecureEndpoint:
+    Type: String
+    Description: "Enter your Sysdig Secure Endpoint"
+    Default: "https://secure.sysdig.com"
+
+  DeployECSScanning:
+    Type: String
+    Description: "Whether should the ECS Scanning be deployed."
+    Default: "false"
+    AllowedValues: [ "true", "false" ]
+
+  DeployECRScanning:
+    Type: String
+    Description: "Whether should the ECR Scanning be deployed."
+    Default: "false"
+    AllowedValues: [ "true", "false" ]
+
+
+Conditions:
+  ShouldDeployCloudConnector:
+    !Not [ !Equals [ !Ref SecureAgentToken, "" ] ]
+
+  ShouldDeployECSScanning:
+    !Equals [ "true", !Ref DeployECSScanning ]
+
+  ShouldDeployECRScanning:
+    !Equals [ "true", !Ref DeployECRScanning ]
+
+
+
+Resources:
+  CloudConnector:
+    Type: AWS::CloudFormation::Stack
+    Condition: ShouldDeployCloudConnector
+    Properties:
+      Parameters:
+        SecureAgentToken: !Ref SecureAgentToken
+      TemplateURL: "https://cf-templates-cloud-connector.s3.amazonaws.com/cloud-connector-secure.yaml"
+      TimeoutInMinutes: 5
+
+  ECSImageScanning:
+    Type: AWS::CloudFormation::Stack
+    Condition: ShouldDeployECSScanning
+    Properties:
+      Parameters:
+        ECSInlineSecureAPIToken: !Ref SecureAPIToken
+        ECSInlineSecureEndpoint: !Ref SecureEndpoint
+      TemplateURL: "https://cf-templates-secure-scanning-ecs.s3.amazonaws.com/ecs-image-scanning.template"
+      TimeoutInMinutes: 5
+
+  ECRImageScanning:
+    Type: AWS::CloudFormation::Stack
+    Condition: ShouldDeployECRScanning
+    Properties:
+      Parameters:
+        SysdigSecureAPIToken: !Ref SecureAPIToken
+        SysdigSecureEndpoint: $Ref SecureEndpoint
+      TemplateURL: "https://cf-templates-secure-scanning-ecr.s3.amazonaws.com/ecr-image-scanning.template"
+      TimeoutInMinutes: 5
