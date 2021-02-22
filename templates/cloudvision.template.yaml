@@ -1,90 +1,272 @@
-AWSTemplateFormatVersion: "2010-09-09"
-Description: Quickstart for Sysdig's CloudVision stack
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Sysdig for Cloud - AWS Edition
 Metadata:
-  QuickStartDocumentation:
-    EntrypointName: "Quickstart for Sysdig's CloudVision stack"
   AWS::CloudFormation::Interface:
     ParameterGroups:
       - Label:
-          default: "Sysdig Secure configuration"
+          default: Sysdig Settings
         Parameters:
-          - SecureEndpoint
-          - SecureAPIToken
-          - SecureAgentToken
+          - SysdigSecureEndpoint
+          - SysdigSecureAPIToken
+      - Label:
+          default: Modules to Deploy
+        Parameters:
+          - CloudBenchDeploy
+          - CloudConnectorDeploy
+          - ECRImageScanningDeploy
+          - ECSImageScanningDeploy
+      - Label:
+          default: Existing Infrastructure
+        Parameters:
+          - ExistentECSCluster
+          - ExistentECSClusterVPC
+          - ExistentECSClusterPrivateSubnets
     ParameterLabels:
-      SecureEndpoint:
-        default: Sysdig Secure endpoint.
-      SecureAPIToken:
-        default: Sysdig Secure API token.
-      SecureAgentToken:
-        default: Sysdig Secure Agent token.
-
+      SysdigSecureEndpoint:
+        default: Sysdig Secure Endpoint
+      SysdigSecureAPIToken:
+        default: Sysdig Secure API Token
+      CloudBenchDeploy:
+        default: Do you want to deploy Cloud Security Posture Management / Compliance?
+      CloudConnectorDeploy:
+        default: Do you want to deploy Real-Time Threat Investigation based on CloudTrail?
+      ECRImageScanningDeploy:
+        default: Do you want to deploy ECR Image Registry Scanning?
+      ECSImageScanningDeploy:
+        default: Do you want to deploy Fargate Image Scanning?
+      ExistentECSCluster:
+        default: ECS Cluster Name
+      ExistentECSClusterVPC:
+        default: VPC Id
+      ExistentECSClusterPrivateSubnets:
+        default: Private subnet Id's
+  QuickStartDocumentation:
+    EntrypointName: Quickstart for Sysdig CloudVision stack
 Parameters:
-  SecureAPIToken:
+  CloudBenchDeploy:
     Type: String
-    Description: "Enter your Sysdig Secure API Token"
-
-  SecureAgentToken:
+    AllowedValues:
+      - 'Yes'
+      - 'No'
+    Default: 'Yes'
+  CloudConnectorDeploy:
     Type: String
-    Description: "Enter your Sysdig Secure Agent Token. Only required if the Cloud Connector is going to be deployed, if not specified the Cloud Connector won't be deployed."
-    Default: ""
-
-  SecureEndpoint:
+    AllowedValues:
+      - 'Yes'
+      - 'No'
+    Default: 'Yes'
+  ECRImageScanningDeploy:
     Type: String
-    Description: "Enter your Sysdig Secure Endpoint"
-    Default: "https://secure.sysdig.com"
-
-  DeployECSScanning:
+    AllowedValues:
+      - 'Yes'
+      - 'No'
+    Default: 'Yes'
+  ECSImageScanningDeploy:
     Type: String
-    Description: "Whether should the ECS Scanning be deployed."
-    Default: "false"
-    AllowedValues: [ "true", "false" ]
-
-  DeployECRScanning:
+    AllowedValues:
+      - 'Yes'
+      - 'No'
+    Default: 'Yes'
+  ExistentECSCluster:
     Type: String
-    Description: "Whether should the ECR Scanning be deployed."
-    Default: "false"
-    AllowedValues: [ "true", "false" ]
-
-
+    Default: ''
+    Description: Leave it blank to let us to deploy the infrastructure required for
+      running Sysdig for Cloud
+  ExistentECSClusterVPC:
+    Type: String
+    Default: ''
+    Description: Leave it blank to let us to deploy the infrastructure required for
+      running Sysdig for Cloud
+  ExistentECSClusterPrivateSubnets:
+    Type: List<String>
+    Default: ''
+    Description: Leave it blank to let us to deploy the infrastructure required for
+      running Sysdig for Cloud
+  SysdigSecureAPIToken:
+    Type: String
+    NoEcho: true
+  SysdigSecureEndpoint:
+    Type: String
+    Default: https://secure.sysdig.com
 Conditions:
-  ShouldDeployCloudConnector:
-    !Not [ !Equals [ !Ref SecureAgentToken, "" ] ]
-
-  ShouldDeployECSScanning:
-    !Equals [ "true", !Ref DeployECSScanning ]
-
-  ShouldDeployECRScanning:
-    !Equals [ "true", !Ref DeployECRScanning ]
-
-
-
+  DeployECRImageScanning:
+    Fn::Equals:
+      - Ref: ECRImageScanningDeploy
+      - 'Yes'
+  DeployCloudConnector:
+    Fn::Equals:
+      - Ref: CloudConnectorDeploy
+      - 'Yes'
+  DeployCloudBench:
+    Fn::Equals:
+      - Ref: CloudBenchDeploy
+      - 'Yes'
+  RequiresNewECSCluster:
+    Fn::Or:
+      - Fn::Equals:
+          - Ref: ExistentECSCluster
+          - ''
+      - Fn::Equals:
+          - Ref: ExistentECSClusterVPC
+          - ''
+      - Fn::Equals:
+          - Fn::Join:
+              - ','
+              - Ref: ExistentECSClusterPrivateSubnets
+          - ''
+  DeployNewECSCluster:
+    Fn::And:
+      - Fn::Or:
+          - Condition: DeployCloudConnector
+          - Condition: DeployCloudBench
+      - Condition: RequiresNewECSCluster
+  DeployECSImageScanning:
+    Fn::Equals:
+      - Ref: ECSImageScanningDeploy
+      - 'Yes'
+  EndpointIsSaas:
+    Fn::Or:
+      - Fn::Equals:
+          - Ref: SysdigSecureEndpoint
+          - https://secure.sysdig.com
+      - Fn::Equals:
+          - Ref: SysdigSecureEndpoint
+          - https://eu1.app.sysdig.com/secure
+      - Fn::Equals:
+          - Ref: SysdigSecureEndpoint
+          - https://us2.app.sysdig.com/secure
 Resources:
-  CloudConnector:
-    Type: AWS::CloudFormation::Stack
-    Condition: ShouldDeployCloudConnector
+  S3ConfigBucket:
+    Type: AWS::S3::Bucket
     Properties:
-      Parameters:
-        SecureAgentToken: !Ref SecureAgentToken
-      TemplateURL: "https://cf-templates-cloud-connector.s3.amazonaws.com/cloud-connector-secure.yaml"
-      TimeoutInMinutes: 5
-
-  ECSImageScanning:
-    Type: AWS::CloudFormation::Stack
-    Condition: ShouldDeployECSScanning
+      VersioningConfiguration:
+        Status: Enabled
+  SysdigSecureAPITokenParameter:
+    Type: AWS::SSM::Parameter
     Properties:
-      Parameters:
-        ECSInlineSecureAPIToken: !Ref SecureAPIToken
-        ECSInlineSecureEndpoint: !Ref SecureEndpoint
-      TemplateURL: "https://cf-templates-secure-scanning-ecs.s3.amazonaws.com/ecs-image-scanning.template"
-      TimeoutInMinutes: 5
-
-  ECRImageScanning:
-    Type: AWS::CloudFormation::Stack
-    Condition: ShouldDeployECRScanning
+      Description: Sysdig Secure API Token
+      Type: String
+      Value:
+        Ref: SysdigSecureAPIToken
+  SysdigSecureEndpointParameter:
+    Type: AWS::SSM::Parameter
     Properties:
+      Description: Sysdig Secure Endpoint URL
+      Type: String
+      Value:
+        Ref: SysdigSecureEndpoint
+  ECRImageScanningStack:
+    Type: AWS::CloudFormation::Stack
+    Condition: DeployECRImageScanning
+    Properties:
+      TemplateURL: https://s3.eu-west-1.amazonaws.com/cf-templates-cloudvision-ci/master/1c7c65a47f7de62956d2cbef2c20f844.template
       Parameters:
-        SysdigSecureAPIToken: !Ref SecureAPIToken
-        SysdigSecureEndpoint: $Ref SecureEndpoint
-      TemplateURL: "https://cf-templates-secure-scanning-ecr.s3.amazonaws.com/ecr-image-scanning.template"
-      TimeoutInMinutes: 5
+        SysdigSecureEndpointSsm:
+          Ref: SysdigSecureEndpointParameter
+        SysdigSecureAPITokenSsm:
+          Ref: SysdigSecureAPITokenParameter
+        VerifySSL:
+          Fn::If:
+            - EndpointIsSaas
+            - 'Yes'
+            - 'No'
+  ECSImageScanningStack:
+    Type: AWS::CloudFormation::Stack
+    Condition: DeployECSImageScanning
+    Properties:
+      TemplateURL: https://s3.eu-west-1.amazonaws.com/cf-templates-cloudvision-ci/master/0131a73dcab9d4e208ab827eb5a45b36.template
+      Parameters:
+        SysdigSecureEndpointSsm:
+          Ref: SysdigSecureEndpointParameter
+        SysdigSecureAPITokenSsm:
+          Ref: SysdigSecureAPITokenParameter
+        VerifySSL:
+          Fn::If:
+            - EndpointIsSaas
+            - 'Yes'
+            - 'No'
+  ECSFargateClusterStack:
+    Type: AWS::CloudFormation::Stack
+    Condition: DeployNewECSCluster
+    Properties:
+      TemplateURL: https://s3.eu-west-1.amazonaws.com/cf-templates-cloudvision-ci/master/f02001cecfa27992e9d9a1cd7740fffb.template
+  CloudConnectorStack:
+    Type: AWS::CloudFormation::Stack
+    Condition: DeployCloudConnector
+    Properties:
+      TemplateURL: https://s3.eu-west-1.amazonaws.com/cf-templates-cloudvision-ci/master/a7a57a5104b5b7b29418ffc221afd951.template
+      Parameters:
+        ECSCluster:
+          Fn::If:
+            - DeployNewECSCluster
+            - Fn::GetAtt:
+                - ECSFargateClusterStack
+                - Outputs.ClusterName
+            - Ref: ExistentECSCluster
+        VPC:
+          Fn::If:
+            - DeployNewECSCluster
+            - Fn::GetAtt:
+                - ECSFargateClusterStack
+                - Outputs.VPC
+            - Ref: ExistentECSClusterVPC
+        Subnets:
+          Fn::If:
+            - DeployNewECSCluster
+            - Fn::GetAtt:
+                - ECSFargateClusterStack
+                - Outputs.PrivateSubnets
+            - Fn::Join:
+                - ','
+                - Ref: ExistentECSClusterPrivateSubnets
+        SysdigSecureEndpointSsm:
+          Ref: SysdigSecureEndpointParameter
+        SysdigSecureAPITokenSsm:
+          Ref: SysdigSecureAPITokenParameter
+        S3ConfigBucket:
+          Ref: S3ConfigBucket
+        VerifySSL:
+          Fn::If:
+            - EndpointIsSaas
+            - 'Yes'
+            - 'No'
+  CloudBenchStack:
+    Type: AWS::CloudFormation::Stack
+    Condition: DeployCloudBench
+    Properties:
+      TemplateURL: https://s3.eu-west-1.amazonaws.com/cf-templates-cloudvision-ci/master/6a8fe0bd236e20dfbebd9a297d0aec00.template
+      Parameters:
+        ECSCluster:
+          Fn::If:
+            - DeployNewECSCluster
+            - Fn::GetAtt:
+                - ECSFargateClusterStack
+                - Outputs.ClusterName
+            - Ref: ExistentECSCluster
+        VPC:
+          Fn::If:
+            - DeployNewECSCluster
+            - Fn::GetAtt:
+                - ECSFargateClusterStack
+                - Outputs.VPC
+            - Ref: ExistentECSClusterVPC
+        Subnets:
+          Fn::If:
+            - DeployNewECSCluster
+            - Fn::GetAtt:
+                - ECSFargateClusterStack
+                - Outputs.PrivateSubnets
+            - Fn::Join:
+                - ','
+                - Ref: ExistentECSClusterPrivateSubnets
+        SysdigSecureEndpointSsm:
+          Ref: SysdigSecureEndpointParameter
+        SysdigSecureAPITokenSsm:
+          Ref: SysdigSecureAPITokenParameter
+        S3ConfigBucket:
+          Ref: S3ConfigBucket
+        VerifySSL:
+          Fn::If:
+            - EndpointIsSaas
+            - 'Yes'
+            - 'No'
