@@ -803,7 +803,7 @@ p.footer-text a{color:#d7d8d8}
 </li>
 <li><a href="#_deployment_steps">Deployment steps</a>
 <ul class="sectlevel2">
-<li><a href="#_quickstart_for_sysdigs_cloudvision_stack">Quickstart for Sysdig&#8217;s CloudVision stack</a></li>
+<li><a href="#_quickstart_for_sysdig_cloudvision_stack">Quickstart for Sysdig CloudVision stack</a></li>
 </ul>
 </li>
 <li><a href="#_best_practices_for_using_sysdig_cloudvision_on_aws">Best practices for using Sysdig CloudVision on AWS</a></li>
@@ -1255,9 +1255,9 @@ Unless you are customizing the Quick Start templates for your own deployment pro
 </table>
 </div>
 <div class="sect2">
-<h3 id="_quickstart_for_sysdigs_cloudvision_stack">Quickstart for Sysdig&#8217;s CloudVision stack</h3>
+<h3 id="_quickstart_for_sysdig_cloudvision_stack">Quickstart for Sysdig CloudVision stack</h3>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 1. Sysdig Secure configuration</caption>
+<caption class="title">Table 1. Sysdig Settings</caption>
 <colgroup>
 <col style="width: 16%;">
 <col style="width: 11%;">
@@ -1272,22 +1272,92 @@ Unless you are customizing the Quick Start templates for your own deployment pro
 </thead>
 <tbody>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Sysdig Secure endpoint.
-(<code>SecureEndpoint</code>)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Sysdig Secure Endpoint
+(<code>SysdigSecureEndpoint</code>)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code><a href="https://secure.sysdig.com" class="bare">https://secure.sysdig.com</a></code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Enter your Sysdig Secure Endpoint</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">NO_DESCRIPTION</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Sysdig Secure API token.
-(<code>SecureAPIToken</code>)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Sysdig Secure API Token
+(<code>SysdigSecureAPIToken</code>)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code><strong><em>Requires input</em></strong></code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Enter your Sysdig Secure API Token</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">NO_DESCRIPTION</p></td>
+</tr>
+</tbody>
+</table>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 2. Modules to Deploy</caption>
+<colgroup>
+<col style="width: 16%;">
+<col style="width: 11%;">
+<col style="width: 73%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Parameter label (name)</th>
+<th class="tableblock halign-left valign-top">Default value</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Do you want to deploy Cloud Security Posture Management / Compliance?
+(<code>CloudBenchDeploy</code>)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Yes</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">NO_DESCRIPTION</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Sysdig Secure Agent token.
-(<code>SecureAgentToken</code>)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Do you want to deploy Real-Time Threat Investigation based on CloudTrail?
+(<code>CloudConnectorDeploy</code>)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Yes</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">NO_DESCRIPTION</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Do you want to deploy ECR Image Registry Scanning?
+(<code>ECRImageScanningDeploy</code>)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Yes</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">NO_DESCRIPTION</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Do you want to deploy Fargate Image Scanning?
+(<code>ECSImageScanningDeploy</code>)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Yes</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">NO_DESCRIPTION</p></td>
+</tr>
+</tbody>
+</table>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 3. Existing Infrastructure</caption>
+<colgroup>
+<col style="width: 16%;">
+<col style="width: 11%;">
+<col style="width: 73%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Parameter label (name)</th>
+<th class="tableblock halign-left valign-top">Default value</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ECS Cluster Name
+(<code>ExistentECSCluster</code>)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code><strong><em>Blank string</em></strong></code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Enter your Sysdig Secure Agent Token. Only required if the Cloud Connector is going to be deployed, if not specified the Cloud Connector won&#8217;t be deployed.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Leave it blank to let us to deploy the infrastructure required for running Sysdig for Cloud</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">VPC Id
+(<code>ExistentECSClusterVPC</code>)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code><strong><em>Blank string</em></strong></code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Leave it blank to let us to deploy the infrastructure required for running Sysdig for Cloud</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Private subnet Id&#8217;s
+(<code>ExistentECSClusterPrivateSubnets</code>)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code><strong><em>Blank string</em></strong></code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Leave it blank to let us to deploy the infrastructure required for running Sysdig for Cloud</p></td>
 </tr>
 </tbody>
 </table>

@@ -1,9 +1,25 @@
 
-.Sysdig Secure configuration
+.Sysdig Settings
 [width="100%",cols="16%,11%,73%",options="header",]
 |===
-|Parameter label (name) |Default value|Description|Sysdig Secure endpoint.
-(`SecureEndpoint`)|`https://secure.sysdig.com`|Enter your Sysdig Secure Endpoint|Sysdig Secure API token.
-(`SecureAPIToken`)|`**__Requires input__**`|Enter your Sysdig Secure API Token|Sysdig Secure Agent token.
-(`SecureAgentToken`)|`**__Blank string__**`|Enter your Sysdig Secure Agent Token. Only required if the Cloud Connector is going to be deployed, if not specified the Cloud Connector won't be deployed.
+|Parameter label (name) |Default value|Description|Sysdig Secure Endpoint
+(`SysdigSecureEndpoint`)|`https://secure.sysdig.com`|NO_DESCRIPTION|Sysdig Secure API Token
+(`SysdigSecureAPIToken`)|`**__Requires input__**`|NO_DESCRIPTION
+|===
+.Modules to Deploy
+[width="100%",cols="16%,11%,73%",options="header",]
+|===
+|Parameter label (name) |Default value|Description|Do you want to deploy Cloud Security Posture Management / Compliance?
+(`CloudBenchDeploy`)|`Yes`|NO_DESCRIPTION|Do you want to deploy Real-Time Threat Investigation based on CloudTrail?
+(`CloudConnectorDeploy`)|`Yes`|NO_DESCRIPTION|Do you want to deploy ECR Image Registry Scanning?
+(`ECRImageScanningDeploy`)|`Yes`|NO_DESCRIPTION|Do you want to deploy Fargate Image Scanning?
+(`ECSImageScanningDeploy`)|`Yes`|NO_DESCRIPTION
+|===
+.Existing Infrastructure
+[width="100%",cols="16%,11%,73%",options="header",]
+|===
+|Parameter label (name) |Default value|Description|ECS Cluster Name
+(`ExistentECSCluster`)|`**__Blank string__**`|Leave it blank to let us to deploy the infrastructure required for running Sysdig for Cloud|VPC Id
+(`ExistentECSClusterVPC`)|`**__Blank string__**`|Leave it blank to let us to deploy the infrastructure required for running Sysdig for Cloud|Private subnet Id's
+(`ExistentECSClusterPrivateSubnets`)|`**__Blank string__**`|Leave it blank to let us to deploy the infrastructure required for running Sysdig for Cloud
 |===
