@@ -1,7 +1,3 @@
 
 :template_aws_cloudformation_stack:
-:template_aws_s3_bucket:
-:template_aws_ssm_parameter:
 :template_cloudformation:
-:template_s3:
-:template_ssm:
